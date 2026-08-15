@@ -171,7 +171,11 @@
     "otpCodePlaceholder": "123456",
     "otpSentTo": "We sent a 6-digit code to {identifier}.",
     "changeIdentifier": "Use a different email or phone",
-    "invalidOtp": "Invalid or expired code"
+    "invalidOtp": "Invalid or expired code",
+    "usePassword": "Sign in with password",
+    "useOtp": "Continue with OTP",
+    "passwordSubmit": "Sign in",
+    "passwordInvalid": "Invalid email or password"
   },
   "property": {
     "title": "Properties",

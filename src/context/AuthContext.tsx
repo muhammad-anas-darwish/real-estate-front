@@ -46,6 +46,11 @@ interface AuthContextType {
     password: string
     password_confirmation: string
   }) => Promise<void>
+  loginWithPassword: (
+    email: string,
+    password: string,
+    remember?: boolean
+  ) => Promise<void>
   logout: () => Promise<void>
   refreshUser: () => Promise<UserDto | null>
   updateUser: (user: UserDto) => void
@@ -160,6 +165,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     applySession(setUser, setToken, session)
   }
 
+  const loginWithPassword = async (
+    email: string,
+    password: string,
+    remember = false
+  ): Promise<void> => {
+    const session = await authService.passwordLogin(email, password, remember)
+    setPendingTwoFactor(null)
+    applySession(setUser, setToken, session)
+  }
+
   const refreshUser = async (): Promise<UserDto | null> => {
     const currentToken = getAuthToken()
     if (!currentToken) return null
@@ -198,6 +213,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     pendingTwoFactor,
     cancelTwoFactor,
     register,
+    loginWithPassword,
     logout,
     refreshUser,
     updateUser,

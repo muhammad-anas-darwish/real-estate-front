@@ -103,6 +103,24 @@ export const authService = {
     throw new Error("Malformed register response")
   },
 
+  async passwordLogin(
+    email: string,
+    password: string,
+    remember = false
+  ): Promise<AuthSessionDto> {
+    const response = await apiClient.post<
+      ApiResponse<AuthSessionDto | { data: AuthSessionDto }>
+    >("/auth/login", { email, password, remember })
+    const data = getApiData(response)
+    if (data && typeof data === "object" && "user" in data && "token" in data) {
+      return data
+    }
+    if (data && typeof data === "object" && "data" in data && data.data) {
+      return data.data
+    }
+    throw new Error("Malformed login response")
+  },
+
   async logout(): Promise<LogoutResponse | void> {
     try {
       const response = await apiClient.post<ApiResponse<LogoutResponse>>(

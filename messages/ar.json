@@ -171,7 +171,11 @@
     "otpCodePlaceholder": "123456",
     "otpSentTo": "أرسلنا رمزاً مكوّناً من 6 أرقام إلى {identifier}.",
     "changeIdentifier": "استخدم بريداً أو هاتفاً آخر",
-    "invalidOtp": "رمز غير صالح أو منتهي الصلاحية"
+    "invalidOtp": "رمز غير صالح أو منتهي الصلاحية",
+    "usePassword": "تسجيل الدخول بكلمة المرور",
+    "useOtp": "متابعة عبر رمز التحقق",
+    "passwordSubmit": "تسجيل الدخول",
+    "passwordInvalid": "بريد إلكتروني أو كلمة مرور غير صالحة"
   },
   "property": {
     "title": "العقارات",
