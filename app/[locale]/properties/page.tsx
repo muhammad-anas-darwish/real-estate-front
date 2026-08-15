@@ -3,17 +3,28 @@
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import dynamic from "next/dynamic"
 import { useRouter, useParams } from "next/navigation"
-import { Filter, Loader2, Plus, X } from "lucide-react"
+import { BookmarkPlus, ChevronDown, Filter, Loader2, Plus } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { DashboardLayout } from "components/layout/DashboardLayout"
 import { propertyService } from "src/modules/properties/services/propertyService"
-import {
-  PropertyFilters,
-} from "src/modules/properties/components/PropertyFilters"
+import { PropertyFilters } from "src/modules/properties/components/PropertyFilters"
 import {
   SearchAutocomplete,
   AdvancedFilters,
@@ -28,7 +39,7 @@ import {
   ShareButton,
   type ActiveFilterChip,
 } from "src/modules/properties/components/FilterExtras"
-import { useDebounce } from "@/hooks"
+import { useDebounce, useMediaQuery } from "@/hooks"
 import type { PropertyDto } from "@/types/dto"
 import { filterToParams, type PropertyFilters as PropertyFiltersApi } from "src/modules/properties/services/propertyService"
 import { cn } from "@/lib/utils"
@@ -36,6 +47,8 @@ import { SaveSearchDialog } from "src/modules/saved-searches/components/SaveSear
 import { useCurrentSearchCandidate } from "src/modules/saved-searches/hooks/useCurrentSearchCandidate"
 
 const PER_PAGE = 12
+const FILTERS_PANEL_ID = "properties-filters-panel"
+const DESKTOP_MEDIA_QUERY = "(min-width: 1024px)"
 
 const PropertyCarousel = dynamic(
   () => import("components/properties/PropertyCarousel").then((m) => m.PropertyCarousel),
@@ -74,12 +87,20 @@ function PublicPropertiesPageInner() {
   })
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
-  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [userPanelChoice, setUserPanelChoice] = useState<boolean | null>(null)
   const [saveDialogOpen, setSaveDialogOpen] = useState(false)
   const loaderRef = useRef<HTMLDivElement | null>(null)
   const debouncedFilters = useDebounce(filters, 250)
   const debouncedSort = useDebounce(filters.sort, 250)
   const { filters: candidateFilters } = useCurrentSearchCandidate()
+  const isDesktop = useMediaQuery(DESKTOP_MEDIA_QUERY)
+
+  const filtersPanelOpen =
+    userPanelChoice !== null ? userPanelChoice : isDesktop
+
+  const handlePanelOpenChange = useCallback((open: boolean) => {
+    setUserPanelChoice(open)
+  }, [])
 
   const buildApiFilters = useCallback(
     (page: number): PropertyFiltersApi => {
@@ -243,6 +264,25 @@ function PublicPropertiesPageInner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedFilters, filters, tProperty])
 
+  const activeFilterCount = useMemo(() => {
+    let count = 0
+    if (debouncedFilters.search) count++
+    if (debouncedFilters.property_type) count++
+    if (debouncedFilters.type_of_contract) count++
+    if (debouncedFilters.country_id) count++
+    if (debouncedFilters.city_id) count++
+    if (debouncedFilters.rooms) count++
+    if (debouncedFilters.bathrooms) count++
+    if (debouncedFilters.min_price) count++
+    if (debouncedFilters.max_price) count++
+    if (advanced.area_min) count++
+    if (advanced.area_max) count++
+    if (advanced.year_built_min) count++
+    if (advanced.year_built_max) count++
+    if (advanced.keywords) count++
+    return count
+  }, [debouncedFilters, advanced])
+
   const loadingMoreRef = useRef(loadingMore)
   const paginationRef = useRef(pagination)
   useEffect(() => {
@@ -268,177 +308,236 @@ function PublicPropertiesPageInner() {
     return () => observer.disconnect()
   }, [])
 
-  const headerActions = (
-    <div className="flex items-center gap-2">
-      <ViewModeToggle value={view} onChange={setView} className="lg:hidden" />
-      <Button
-        size="sm"
-        variant="outline"
-        onClick={() => setFiltersOpen(true)}
-        className="lg:hidden"
-      >
-        <Filter className="size-4" />
-        {tCommon("search")}
-      </Button>
-    </div>
+  const gridLayoutClass = cn(
+    "grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+  )
+  const skeletonLayoutClass = cn(
+    view === "grid" ? gridLayoutClass : "space-y-2"
   )
 
   return (
-    <DashboardLayout title={tProperty("title")} actions={headerActions}>
-      <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-        <aside className="hidden lg:block space-y-4">
-          <Card>
-            <CardContent className="p-4">
-              <PropertyFilters value={filters} onChange={setFilters} />
-            </CardContent>
-          </Card>
-          <AdvancedFilters
-            values={advanced}
-            onChange={setAdvanced}
-            onReset={() => setAdvanced(EMPTY_ADVANCED_FILTERS)}
-          />
-        </aside>
+    <DashboardLayout title={tProperty("title")}>
+      <div className="space-y-4">
+        <Collapsible
+          open={filtersPanelOpen}
+          onOpenChange={handlePanelOpenChange}
+        >
+          <div
+            className={cn(
+              "sticky top-16 z-10 -mx-4 border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:-mx-6 lg:px-6 xl:-mx-8 xl:px-8",
+              "transition-shadow"
+            )}
+          >
+            <div className="flex flex-wrap items-center gap-2 py-3">
+              <CollapsibleTrigger asChild>
+                <Button
+                  type="button"
+                  variant={filtersPanelOpen ? "secondary" : "outline"}
+                  size="sm"
+                  aria-expanded={filtersPanelOpen}
+                  aria-controls={FILTERS_PANEL_ID}
+                  aria-label={
+                    filtersPanelOpen
+                      ? tProperty("filters.toggleHide")
+                      : tProperty("filters.toggleShow")
+                  }
+                  data-testid="properties-filters-toggle"
+                >
+                  <Filter className="size-4" aria-hidden />
+                  <span>{tProperty("filters.toggleLabel")}</span>
+                  {activeFilterCount > 0 && (
+                    <Badge
+                      variant="default"
+                      className="ms-1 h-5 min-w-5 justify-center px-1.5 text-xs"
+                    >
+                      {activeFilterCount}
+                    </Badge>
+                  )}
+                  <ChevronDown
+                    className={cn(
+                      "ms-1 size-4 transition-transform",
+                      filtersPanelOpen && "rotate-180"
+                    )}
+                    aria-hidden
+                  />
+                </Button>
+              </CollapsibleTrigger>
 
-        <div className="space-y-6">
-          <SearchAutocomplete
-            locale={locale}
-            initialQuery={filters.search}
-            basePath={`/${locale}/properties`}
-          />
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">{tProperty("title")}</h1>
-              <p className="text-sm text-muted-foreground">
-                {loading && data.length === 0
-                  ? `${tCommon("loading").replace("...", "")}...`
-                  : `${pagination.total} ${pagination.total === 1 ? tProperty("title").slice(0, -1) : tProperty("title").toLowerCase()}`}
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setSaveDialogOpen(true)}
-                disabled={!hasActiveFilters}
-                data-testid="open-save-search-dialog-properties"
+              <span
+                className="text-sm text-muted-foreground"
+                aria-live="polite"
               >
-                {tProperty("filters.saveSearch")}
-              </Button>
-              <ShareButton />
-              <ViewModeToggle value={view} onChange={setView} />
-              <Button onClick={() => router.push("/properties/create")} className="rounded-lg">
-                <Plus className="size-4 mr-2 rtl:mr-0 rtl:ml-2" />
-                {tProperty("create")}
-              </Button>
+                {loading && data.length === 0
+                  ? tCommon("loading")
+                  : tProperty("filters.resultCount", {
+                      count: pagination.total,
+                    })}
+              </span>
+
+              <div className="ms-auto flex items-center gap-2">
+                <Select
+                  value={filters.sort}
+                  onValueChange={(value) =>
+                    setFilters({ ...filters, sort: value })
+                  }
+                >
+                  <SelectTrigger
+                    className="h-9 min-w-[140px] px-3 py-1 text-sm"
+                    aria-label={tProperty("filters.sortBy")}
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="created_at:desc">
+                      {tProperty("filters.sort.newest")}
+                    </SelectItem>
+                    <SelectItem value="created_at:asc">
+                      {tProperty("filters.sort.oldest")}
+                    </SelectItem>
+                    <SelectItem value="price:asc">
+                      {tProperty("filters.sort.priceAsc")}
+                    </SelectItem>
+                    <SelectItem value="price:desc">
+                      {tProperty("filters.sort.priceDesc")}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setSaveDialogOpen(true)}
+                  disabled={!hasActiveFilters}
+                  data-testid="open-save-search-dialog-properties"
+                >
+                  <BookmarkPlus className="size-4" aria-hidden />
+                  <span className="hidden sm:inline">
+                    {tProperty("filters.saveSearch")}
+                  </span>
+                </Button>
+              </div>
             </div>
           </div>
 
-          <ActiveFilterChips
-            chips={chips}
-            onClearAll={resetFilters}
-            clearAllLabel={tProperty("filters.clearAll")}
-          />
+          <CollapsibleContent
+            id={FILTERS_PANEL_ID}
+            className="data-[state=open]:animate-fade-in"
+            role="region"
+            aria-label={tProperty("filters.toggleLabel")}
+          >
+            <Card>
+              <CardContent className="space-y-4 p-4">
+                <SearchAutocomplete
+                  locale={locale}
+                  initialQuery={filters.search}
+                  basePath={`/${locale}/properties`}
+                />
+                <PropertyFilters
+                  value={filters}
+                  onChange={setFilters}
+                  showSort={false}
+                />
+                <AdvancedFilters
+                  values={advanced}
+                  onChange={setAdvanced}
+                  onReset={() => setAdvanced(EMPTY_ADVANCED_FILTERS)}
+                />
+              </CardContent>
+            </Card>
+          </CollapsibleContent>
+        </Collapsible>
 
-          <PropertyCarousel
-            properties={featured}
-            title={tHome("cta")}
-            loading={featured.length === 0}
-            error={null}
-            onRetry={() => {
-              void fetchFeatured().then((data) => setFeatured(data))
-            }}
-          />
+        <ActiveFilterChips
+          chips={chips}
+          onClearAll={resetFilters}
+          clearAllLabel={tProperty("filters.clearAll")}
+        />
 
-          <div className="space-y-3">
-            <h2 className="text-lg font-semibold">{tProperty("browse")}</h2>
-            {loading && data.length === 0 ? (
-              <div
-                className={cn(
-                  view === "grid"
-                    ? "grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
-                    : "space-y-2"
-                )}
-              >
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className={cn(
-                      "animate-pulse rounded-lg bg-muted",
-                      view === "grid" ? "h-72" : "h-24"
-                    )}
-                  />
-                ))}
-              </div>
-            ) : data.length === 0 ? (
-              <Card>
-                <CardContent className="p-12 text-center text-sm text-muted-foreground">
-                  <p className="font-medium">{tProperty("noResults")}</p>
-                </CardContent>
-              </Card>
-            ) : view === "grid" ? (
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {data.map((property) => (
-                  <PropertyGridCard key={property.id} property={property} />
-                ))}
-              </div>
-            ) : view === "list" ? (
-              <div className="space-y-2">
-                {data.map((property) => (
-                  <PropertyListRow key={property.id} property={toListItem(property)} />
-                ))}
-              </div>
-            ) : (
-              <PropertyMapView properties={data} />
-            )}
-
-            <div
-              ref={loaderRef}
-              className="flex items-center justify-center py-6 text-sm text-muted-foreground"
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
+          <h1 className="text-xl font-bold tracking-tight sm:text-2xl">
+            {tProperty("title")}
+          </h1>
+          <div className="flex items-center gap-2">
+            <ShareButton />
+            <ViewModeToggle value={view} onChange={setView} />
+            <Button
+              onClick={() => router.push("/properties/create")}
+              size="sm"
+              className="rounded-lg"
             >
-              {loadingMore ? (
-                <span className="flex items-center gap-2">
-                  <Loader2 className="size-4 animate-spin" />
-                  {tCommon("loading")}
-                </span>
-              ) : null}
+              <Plus className="size-4" aria-hidden />
+              <span className="hidden sm:inline">
+                {tProperty("create")}
+              </span>
+            </Button>
+          </div>
+        </div>
+
+        <PropertyCarousel
+          properties={featured}
+          title={tHome("cta")}
+          loading={featured.length === 0}
+          error={null}
+          onRetry={() => {
+            void fetchFeatured().then((data) => setFeatured(data))
+          }}
+        />
+
+        <div className="space-y-3">
+          <h2 className="text-base font-semibold sm:text-lg">
+            {tProperty("browse")}
+          </h2>
+          {loading && data.length === 0 ? (
+            <div className={skeletonLayoutClass}>
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div
+                  key={i}
+                  className={cn(
+                    "animate-pulse rounded-lg bg-muted",
+                    view === "grid" ? "h-56" : "h-24"
+                  )}
+                />
+              ))}
             </div>
+          ) : data.length === 0 ? (
+            <Card>
+              <CardContent className="p-12 text-center text-sm text-muted-foreground">
+                <p className="font-medium">{tProperty("noResults")}</p>
+              </CardContent>
+            </Card>
+          ) : view === "grid" ? (
+            <div className={gridLayoutClass}>
+              {data.map((property) => (
+                <PropertyGridCard key={property.id} property={property} />
+              ))}
+            </div>
+          ) : view === "list" ? (
+            <div className="space-y-2">
+              {data.map((property) => (
+                <PropertyListRow
+                  key={property.id}
+                  property={toListItem(property)}
+                />
+              ))}
+            </div>
+          ) : (
+            <PropertyMapView properties={data} />
+          )}
+
+          <div
+            ref={loaderRef}
+            className="flex items-center justify-center py-6 text-sm text-muted-foreground"
+          >
+            {loadingMore ? (
+              <span className="flex items-center gap-2">
+                <Loader2 className="size-4 animate-spin" />
+                {tCommon("loading")}
+              </span>
+            ) : null}
           </div>
         </div>
       </div>
-
-      {filtersOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm lg:hidden"
-          onClick={() => setFiltersOpen(false)}
-        >
-          <div
-            className="absolute inset-y-0 left-0 w-full max-w-sm overflow-y-auto bg-background p-4 shadow-xl rtl:left-auto rtl:right-0"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold">{tCommon("search")}</h2>
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={() => setFiltersOpen(false)}
-                aria-label={tCommon("close")}
-              >
-                <X className="size-4" />
-              </Button>
-            </div>
-            <PropertyFilters value={filters} onChange={setFilters} />
-            {hasActiveFilters && (
-              <Button
-                variant="outline"
-                className="mt-4 w-full"
-                onClick={() => resetFilters()}
-              >
-                {tProperty("filters.clearAll")}
-              </Button>
-            )}
-          </div>
-        </div>
-      )}
 
       <SaveSearchDialog
         open={saveDialogOpen}

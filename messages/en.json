@@ -275,7 +275,13 @@
       "savedSearches": "Saved searches",
       "loadSearch": "Load",
       "deleteSearch": "Delete",
-      "noSavedSearches": "No saved searches yet"
+      "noSavedSearches": "No saved searches yet",
+      "toggleLabel": "Filters",
+      "toggleShow": "Show filters",
+      "toggleHide": "Hide filters",
+      "toggleAria": "Toggle filter panel",
+      "sortByLabel": "Sort",
+      "resultCount": "{count, plural, =0 {No properties} =1 {1 property} other {# properties}}"
     },
     "map": {
       "view": "Map",

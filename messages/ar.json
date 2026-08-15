@@ -275,7 +275,13 @@
       "savedSearches": "عمليات البحث المحفوظة",
       "loadSearch": "تحميل",
       "deleteSearch": "حذف",
-      "noSavedSearches": "لا توجد عمليات بحث محفوظة بعد"
+      "noSavedSearches": "لا توجد عمليات بحث محفوظة بعد",
+      "toggleLabel": "الفلاتر",
+      "toggleShow": "إظهار الفلاتر",
+      "toggleHide": "إخفاء الفلاتر",
+      "toggleAria": "تبديل لوحة الفلاتر",
+      "sortByLabel": "الترتيب",
+      "resultCount": "{count, plural, =0 {لا توجد عقارات} =1 {عقار واحد} two {عقاران} few {# عقارات} many {# عقاراً} other {# عقار}}"
     },
     "map": {
       "view": "الخريطة",

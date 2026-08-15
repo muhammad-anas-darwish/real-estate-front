@@ -64,6 +64,7 @@ interface PropertyFiltersProps {
   onChange: (filters: PropertyFilterValues) => void
   className?: string
   showPrice?: boolean
+  showSort?: boolean
 }
 
 export function PropertyFilters({
@@ -72,6 +73,7 @@ export function PropertyFilters({
   onChange,
   className,
   showPrice = true,
+  showSort = true,
 }: PropertyFiltersProps) {
   const t = useTranslations("property.filters")
   const tCommon = useTranslations("common")
@@ -347,20 +349,22 @@ export function PropertyFilters({
         </div>
       )}
 
-      <div className="space-y-2">
-        <Label htmlFor="sort-select">{t("sortBy")}</Label>
-        <Select value={values.sort} onValueChange={(value) => update("sort", value)}>
-          <SelectTrigger id="sort-select" aria-label={t("sortBy")}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="created_at:desc">{t("sort.newest")}</SelectItem>
-            <SelectItem value="created_at:asc">{t("sort.oldest")}</SelectItem>
-            <SelectItem value="price:asc">{t("sort.priceAsc")}</SelectItem>
-            <SelectItem value="price:desc">{t("sort.priceDesc")}</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      {showSort && (
+        <div className="space-y-2">
+          <Label htmlFor="sort-select">{t("sortBy")}</Label>
+          <Select value={values.sort} onValueChange={(value) => update("sort", value)}>
+            <SelectTrigger id="sort-select" aria-label={t("sortBy")}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="created_at:desc">{t("sort.newest")}</SelectItem>
+              <SelectItem value="created_at:asc">{t("sort.oldest")}</SelectItem>
+              <SelectItem value="price:asc">{t("sort.priceAsc")}</SelectItem>
+              <SelectItem value="price:desc">{t("sort.priceDesc")}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       <Button
         type="button"

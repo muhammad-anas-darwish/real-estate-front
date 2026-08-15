@@ -37,13 +37,14 @@ export function PropertyGridCard({ property }: PropertyGridCardProps) {
       }}
       className="group flex h-full cursor-pointer flex-col overflow-hidden border-border/50 transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md"
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+      <div className="relative aspect-[16/10] overflow-hidden bg-muted">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={imageSrc}
           alt={property.name}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
+          decoding="async"
         />
         <div className="absolute left-2 top-2 flex flex-col gap-1">
           <Badge variant="secondary" className="capitalize">
@@ -67,20 +68,22 @@ export function PropertyGridCard({ property }: PropertyGridCardProps) {
           </Badge>
         </div>
       </div>
-      <CardContent className="flex flex-1 flex-col gap-2 p-4">
+      <CardContent className="flex flex-1 flex-col gap-1.5 p-3">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="line-clamp-1 font-semibold">{property.name}</h3>
-          <span className="whitespace-nowrap font-bold text-primary">
+          <h3 className="line-clamp-2 text-sm font-semibold leading-tight">
+            {property.name}
+          </h3>
+          <span className="whitespace-nowrap text-sm font-bold text-primary">
             {property.formatted_price}
           </span>
         </div>
         <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <MapPin className="size-3.5" />
+          <MapPin className="size-3" />
           <span className="truncate">
             {property.city.name}, {property.country.name}
           </span>
         </div>
-        <div className="flex flex-1 items-end justify-between gap-2 border-t border-border/60 pt-2 text-xs text-muted-foreground">
+        <div className="flex flex-1 items-end justify-between gap-2 border-t border-border/60 pt-1.5 text-xs text-muted-foreground">
           <div className="flex flex-wrap items-center gap-2">
             <span className="flex items-center gap-1">
               <Bed className="size-3" />
