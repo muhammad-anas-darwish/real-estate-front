@@ -324,6 +324,16 @@
         "description": "This listing is archived and hidden from the public."
       },
       "rejectionReason": "Reason from the reviewer"
+    },
+    "detail": {
+      "description": "Description",
+      "detailedInfo": "Detailed Information",
+      "location": "Location",
+      "mortgage": "Mortgage Calculator",
+      "reviews": "Reviews",
+      "additionalDetails": "Additional Details",
+      "created": "Listed",
+      "updated": "Updated"
     }
   },
   "viewing": {

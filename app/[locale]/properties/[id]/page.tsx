@@ -19,6 +19,7 @@ import {
   MessageCircle,
 } from "lucide-react"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 
 import { Button } from "components/ui/button"
 import { Badge } from "components/ui/badge"
@@ -26,7 +27,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CardTitle,
 } from "components/ui/card"
 import {
   Dialog,
@@ -79,6 +79,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
   const { id } = use(params)
   const routerParams = useParams<{ locale: string }>()
   const locale = routerParams?.locale ?? "en"
+  const tDetail = useTranslations("property.detail")
   const router = useRouter()
   const [property, setProperty] = useState<Property | null>(null)
   const [loading, setLoading] = useState(true)
@@ -345,137 +346,209 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               </CardContent>
             </Card>
 
-            <Card className="bg-card border-border/50">
+            <Card className="bg-card border-border/50" id="property-publisher-card">
               <CardContent className="p-5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center size-10 rounded-xl gradient-primary text-primary-foreground">
-                      <User className="size-4" />
-                    </div>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-semibold">{property.publisher?.name}</p>
+                <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+                  <div className="flex items-start gap-3 min-w-0">
+                    {property.publisher?.avatar_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={property.publisher.avatar_url}
+                        alt={property.publisher?.name ?? ""}
+                        className="size-10 rounded-xl object-cover flex-shrink-0 bg-muted"
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center size-10 rounded-xl gradient-primary text-primary-foreground flex-shrink-0">
+                        <User className="size-4" />
+                      </div>
+                    )}
+                    <div className="min-w-0 space-y-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="text-sm font-semibold break-words min-w-0">
+                          {property.publisher?.name}
+                        </p>
                         <VerifiedBadge
                           verified={property.publisher?.is_verified}
                           label={property.publisher?.publisher_type === "office" ? "Office" : "Verified"}
                         />
                       </div>
-                      <p className="text-xs text-muted-foreground">{property.publisher?.email}</p>
+                      {property.publisher?.email && (
+                        <p className="text-xs text-muted-foreground break-all min-w-0">
+                          {property.publisher.email}
+                        </p>
+                      )}
                     </div>
                   </div>
-                  {currentUser && currentUser.id !== property.publisher?.id && (
-                    <div className="flex flex-col gap-2 sm:flex-row">
-                      <Button onClick={handleContact} disabled={creatingChat} size="sm" className="rounded-lg">
-                        {creatingChat ? (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {property.status !== "sold" &&
+                    (!currentUser || currentUser.id !== property.publisher?.id) && (
+                      <div className="flex flex-row flex-wrap gap-2 lg:justify-end">
+                        {currentUser ? (
+                          <Button
+                            onClick={handleContact}
+                            disabled={creatingChat}
+                            size="sm"
+                            className="rounded-lg"
+                          >
+                            {creatingChat ? (
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            ) : (
+                              <MessageCircle className="mr-2 h-4 w-4" />
+                            )}
+                            Contact
+                          </Button>
                         ) : (
-                          <MessageCircle className="mr-2 h-4 w-4" />
+                          <Button
+                            onClick={() => router.push("/login")}
+                            size="sm"
+                            className="rounded-lg"
+                          >
+                            <MessageCircle className="mr-2 h-4 w-4" />
+                            Contact
+                          </Button>
                         )}
-                        Contact
-                      </Button>
-                      <BookViewingDialog
-                        propertyId={property.id}
-                        propertyName={property.name}
-                      />
-                    </div>
-                  )}
-                  {!currentUser && (
-                    <div className="flex flex-col gap-2 sm:flex-row">
-                      <Button onClick={() => router.push("/login")} size="sm" className="rounded-lg">
-                        <MessageCircle className="mr-2 h-4 w-4" />
-                        Contact
-                      </Button>
-                      <Button
-                        onClick={() => router.push("/login")}
-                        variant="outline"
-                        size="sm"
-                        className="rounded-lg"
-                      >
-                        Book Viewing
-                      </Button>
-                    </div>
-                  )}
+                        {currentUser ? (
+                          <BookViewingDialog
+                            propertyId={property.id}
+                            propertyName={property.name}
+                          />
+                        ) : (
+                          <Button
+                            onClick={() => router.push("/login")}
+                            variant="outline"
+                            size="sm"
+                            className="rounded-lg"
+                          >
+                            Book Viewing
+                          </Button>
+                        )}
+                      </div>
+                    )}
                 </div>
               </CardContent>
             </Card>
           </div>
         </div>
 
-        <Card className="bg-card border-border/50">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base font-bold">Description</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">{property.description}</p>
-          </CardContent>
-        </Card>
-
-        {property.detailed_info && (
+        <section aria-labelledby="property-detail-description">
           <Card className="bg-card border-border/50">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base font-bold">Detailed Information</CardTitle>
+              <h2
+                id="property-detail-description"
+                className="text-base font-bold tracking-tight"
+              >
+                {tDetail("description")}
+              </h2>
             </CardHeader>
             <CardContent>
-              <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">{property.detailed_info}</p>
+              <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground break-words">
+                {property.description}
+              </p>
             </CardContent>
           </Card>
+        </section>
+
+        {property.detailed_info && (
+          <section aria-labelledby="property-detail-detailed">
+            <Card className="bg-card border-border/50">
+              <CardHeader className="pb-3">
+                <h2
+                  id="property-detail-detailed"
+                  className="text-base font-bold tracking-tight"
+                >
+                  {tDetail("detailedInfo")}
+                </h2>
+              </CardHeader>
+              <CardContent>
+                <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground break-words">
+                  {property.detailed_info}
+                </p>
+              </CardContent>
+            </Card>
+          </section>
         )}
 
         {hasMap && (
-          <Card className="bg-card border-border/50">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-bold">Location</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <PropertyMap
-                latitude={mapLat}
-                longitude={mapLng}
-                label={`${property.city?.name ?? ""}, ${property.country?.name ?? ""}`}
-                height={320}
-              />
-            </CardContent>
-          </Card>
+          <section aria-labelledby="property-detail-location">
+            <Card className="bg-card border-border/50">
+              <CardHeader className="pb-3">
+                <h2
+                  id="property-detail-location"
+                  className="text-base font-bold tracking-tight"
+                >
+                  {tDetail("location")}
+                </h2>
+              </CardHeader>
+              <CardContent>
+                <PropertyMap
+                  latitude={mapLat}
+                  longitude={mapLng}
+                  label={`${property.city?.name ?? ""}, ${property.country?.name ?? ""}`}
+                  height={320}
+                />
+              </CardContent>
+            </Card>
+          </section>
         )}
 
         {priceValue > 0 && property.type_of_contract === "sale" && (
-          <MortgageCalculator
-            initialPrice={priceValue}
-            currencyLabel={property.formatted_price?.split(/[\d.,]+/)?.[0] ?? ""}
-          />
+          <section
+            aria-labelledby="property-detail-mortgage"
+            id="property-detail-mortgage-section"
+          >
+            <h2 id="property-detail-mortgage" className="sr-only">
+              {tDetail("mortgage")}
+            </h2>
+            <MortgageCalculator
+              initialPrice={priceValue}
+              currencyLabel={property.formatted_price?.split(/[\d.,]+/)?.[0] ?? ""}
+            />
+          </section>
         )}
 
-        <ReviewsSection
-          propertyId={property.id}
-          officeId={property.publisher?.id}
-          initialAverage={property.publisher?.average_rating}
-          initialCount={property.publisher?.reviews_count}
-        />
+        <section aria-labelledby="property-detail-reviews" id="property-detail-reviews-section">
+          <h2 id="property-detail-reviews" className="sr-only">
+            {tDetail("reviews")}
+          </h2>
+          <ReviewsSection
+            propertyId={property.id}
+            officeId={property.publisher?.id}
+            initialAverage={property.publisher?.average_rating}
+            initialCount={property.publisher?.reviews_count}
+          />
+        </section>
 
-        <Card className="bg-card border-border/50">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base font-bold">Additional Details</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-3 text-sm">
-              <div className="flex justify-between items-center p-3 rounded-xl bg-accent/30">
-                <span className="text-muted-foreground flex items-center gap-2">
-                  <Calendar className="size-4" />
-                  Created
-                </span>
-                <span className="font-medium">{new Date(property.created_at).toLocaleDateString()}</span>
-              </div>
-              {property.updated_at && (
+        <section aria-labelledby="property-detail-additional">
+          <Card className="bg-card border-border/50">
+            <CardHeader className="pb-3">
+              <h2
+                id="property-detail-additional"
+                className="text-base font-bold tracking-tight"
+              >
+                {tDetail("additionalDetails")}
+              </h2>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-3 text-sm">
                 <div className="flex justify-between items-center p-3 rounded-xl bg-accent/30">
                   <span className="text-muted-foreground flex items-center gap-2">
                     <Calendar className="size-4" />
-                    Updated
+                    {tDetail("created")}
                   </span>
-                  <span className="font-medium">{new Date(property.updated_at).toLocaleDateString()}</span>
+                  <span className="font-medium">{new Date(property.created_at).toLocaleDateString()}</span>
                 </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                {property.updated_at && (
+                  <div className="flex justify-between items-center p-3 rounded-xl bg-accent/30">
+                    <span className="text-muted-foreground flex items-center gap-2">
+                      <Calendar className="size-4" />
+                      {tDetail("updated")}
+                    </span>
+                    <span className="font-medium">{new Date(property.updated_at).toLocaleDateString()}</span>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </section>
       </div>
 
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

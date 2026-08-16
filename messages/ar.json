@@ -324,6 +324,16 @@
         "description": "هذه القائمة مؤرشفة ومخفية عن العامة."
       },
       "rejectionReason": "السبب من المراجع"
+    },
+    "detail": {
+      "description": "الوصف",
+      "detailedInfo": "معلومات تفصيلية",
+      "location": "الموقع",
+      "mortgage": "حاسبة التمويل العقاري",
+      "reviews": "التقييمات",
+      "additionalDetails": "تفاصيل إضافية",
+      "created": "تاريخ الإضافة",
+      "updated": "تاريخ التحديث"
     }
   },
   "viewing": {
