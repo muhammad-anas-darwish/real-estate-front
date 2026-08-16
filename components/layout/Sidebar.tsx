@@ -109,7 +109,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             href={localizedHref("/")}
             className="flex items-center gap-2.5 transition-opacity hover:opacity-90"
           >
-            <div className="flex items-center justify-center size-8 rounded-lg gradient-primary shadow-md shadow-primary/25 text-primary-foreground">
+            <div className="flex items-center justify-center size-8 rounded-lg bg-primary shadow-md shadow-primary/25 text-primary-foreground">
               <Building2 className="size-4" />
             </div>
             <span className="font-heading font-bold text-base tracking-tight">
@@ -146,7 +146,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                 className={cn(
                   "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
                   isActive
-                    ? "gradient-primary text-primary-foreground shadow-sm shadow-primary/20"
+                    ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
                     : "text-muted-foreground hover:bg-accent/60 hover:text-foreground"
                 )}
                 onClick={onClose}

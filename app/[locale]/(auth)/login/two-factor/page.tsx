@@ -59,7 +59,7 @@ function TwoFactorForm() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center size-14 rounded-2xl gradient-primary text-primary-foreground mb-4">
+          <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-primary text-primary-foreground mb-4">
             <Building2 className="size-7" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight">{t("twoFactorTitle")}</h1>

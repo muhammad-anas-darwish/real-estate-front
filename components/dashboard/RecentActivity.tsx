@@ -76,11 +76,11 @@ const typeIcons = {
   approval: CheckCircle,
 }
 
-const typeGradients = {
-  property: "gradient-primary",
-  lead: "gradient-success",
-  report: "gradient-warning",
-  approval: "gradient-destructive",
+const typeTones = {
+  property: "bg-primary text-primary-foreground",
+  lead: "bg-success text-success-foreground",
+  report: "bg-warning text-warning-foreground",
+  approval: "bg-destructive text-destructive-foreground",
 }
 
 const statusConfig = {
@@ -112,15 +112,15 @@ export function RecentActivity() {
           {activities.map((activity) => {
             const Icon = typeIcons[activity.type]
             const status = statusConfig[activity.status]
-            const gradient = typeGradients[activity.type]
+            const tone = typeTones[activity.type]
 
             return (
               <div
                 key={activity.id}
                 className="group flex items-start gap-4 px-5 py-4 transition-all duration-200 ease-in-out hover:bg-accent/40"
               >
-                <div className={`flex shrink-0 items-center justify-center rounded-xl ${gradient} shadow-sm size-10`}>
-                  <Icon className="size-[16px] text-white" />
+                <div className={`flex shrink-0 items-center justify-center rounded-xl ${tone} shadow-sm size-10`}>
+                  <Icon className="size-[16px]" />
                 </div>
                 <div className="flex-1 min-w-0 space-y-1">
                   <p className="text-sm font-semibold leading-tight text-foreground">

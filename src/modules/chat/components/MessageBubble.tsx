@@ -61,7 +61,7 @@ export function MessageBubble({
         className={cn(
           "rounded-2xl px-3 py-2 text-sm shadow-sm",
           isMine
-            ? "gradient-primary text-primary-foreground"
+            ? "bg-primary text-primary-foreground"
             : "bg-muted text-foreground"
         )}
       >

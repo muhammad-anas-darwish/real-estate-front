@@ -96,7 +96,8 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0.015 250);
 
-  --primary: oklch(0.55 0.2 265);
+  /* Single brand blue (Tailwind blue-700 #1d4ed8) - solid, no gradient. */
+  --primary: oklch(0.491 0.215 264.05);
   --primary-foreground: oklch(1 0 0);
 
   --secondary: oklch(0.96 0.015 265);
@@ -113,7 +114,7 @@
 
   --border: oklch(0.91 0.012 265);
   --input: oklch(0.9 0.012 265);
-  --ring: oklch(0.55 0.2 265);
+  --ring: oklch(0.491 0.215 264.05);
   --ring-offset: oklch(1 0 0);
 
   --sidebar: oklch(0.975 0.01 265);
@@ -137,7 +138,8 @@
   --popover: oklch(0.16 0.02 265);
   --popover-foreground: oklch(0.93 0.01 265);
 
-  --primary: oklch(0.7 0.18 265);
+  /* Dark mode brand: lighter blue (Tailwind blue-500 #3b82f6) for AA contrast. */
+  --primary: oklch(0.623 0.188 259.73);
   --primary-foreground: oklch(0.12 0.02 265);
 
   --secondary: oklch(0.22 0.04 265);
@@ -154,7 +156,7 @@
 
   --border: oklch(1 0 0 / 0.08);
   --input: oklch(1 0 0 / 0.12);
-  --ring: oklch(0.65 0.18 265);
+  --ring: oklch(0.623 0.188 259.73);
   --ring-offset: oklch(0.12 0.015 265);
 
   --sidebar: oklch(0.14 0.02 265);
@@ -212,24 +214,26 @@
     border: 1px solid oklch(1 0 0 / 0.08);
   }
 
+  /* Fallback utility classes for places that still reference gradient-*.
+     Single solid colors only — no multi-color gradients. */
   .gradient-primary {
-    background: linear-gradient(135deg, oklch(0.55 0.2 265), oklch(0.6 0.22 290));
-  }
-
-  .dark .gradient-primary {
-    background: linear-gradient(135deg, oklch(0.6 0.18 265), oklch(0.65 0.2 290));
+    background-color: var(--primary);
+    color: var(--primary-foreground);
   }
 
   .gradient-success {
-    background: linear-gradient(135deg, oklch(0.55 0.17 155), oklch(0.5 0.15 170));
+    background-color: var(--success);
+    color: var(--success-foreground);
   }
 
   .gradient-warning {
-    background: linear-gradient(135deg, oklch(0.65 0.18 80), oklch(0.6 0.2 60));
+    background-color: var(--warning);
+    color: var(--warning-foreground);
   }
 
   .gradient-destructive {
-    background: linear-gradient(135deg, oklch(0.577 0.245 27.325), oklch(0.5 0.22 15));
+    background-color: var(--destructive);
+    color: var(--destructive-foreground);
   }
 
   .stagger-children > * {
@@ -256,18 +260,9 @@
   .stagger-children-sm > *:nth-child(5) { animation-delay: 120ms; }
   .stagger-children-sm > *:nth-child(6) { animation-delay: 150ms; }
 
+  /* Solid brand text — replaces multi-color gradient text. */
   .text-gradient {
-    background: linear-gradient(135deg, oklch(0.55 0.2 265), oklch(0.6 0.22 290));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .dark .text-gradient {
-    background: linear-gradient(135deg, oklch(0.7 0.18 265), oklch(0.75 0.2 290));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--primary);
   }
 
   .btn-like {
@@ -307,16 +302,22 @@
     opacity: 0.5;
   }
 
+  /* Solid brand button — replaces multi-color gradient button. */
   .btn-like-primary {
-    background: linear-gradient(135deg, oklch(0.55 0.2 265), oklch(0.6 0.22 290));
+    background-color: var(--primary);
     color: var(--primary-foreground);
-    box-shadow: 0 1px 2px 0 oklch(0.55 0.2 265 / 0.2);
+    box-shadow: 0 1px 2px 0 color-mix(in oklch, var(--primary) 20%, transparent);
   }
 
   .btn-like-primary:hover {
-    filter: brightness(1.1);
-    box-shadow: 0 4px 12px 0 oklch(0.55 0.2 265 / 0.3);
+    background-color: color-mix(in oklch, var(--primary) 90%, white);
+    box-shadow: 0 4px 12px 0 color-mix(in oklch, var(--primary) 30%, transparent);
     color: var(--primary-foreground);
+  }
+
+  .btn-like-primary:active {
+    background-color: color-mix(in oklch, var(--primary) 80%, black);
+    transform: scale(0.98);
   }
 
   .btn-like-ghost {

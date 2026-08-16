@@ -59,7 +59,7 @@ export function Header({ onMenuClick, title, actions }: HeaderProps) {
           aria-label={tNotification("title")}
         >
           <Bell className="size-[18px]" />
-          <span className="absolute top-1.5 right-1.5 size-2 rounded-full gradient-primary ring-2 ring-background rtl:right-auto rtl:left-1.5" />
+          <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-primary ring-2 ring-background rtl:right-auto rtl:left-1.5" />
         </Button>
 
         {!user ? (

@@ -59,7 +59,7 @@ export default function RegisterPage() {
 
       <div className="w-full max-w-md relative z-10 stagger-children-sm">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center size-12 rounded-xl gradient-primary shadow-lg shadow-primary/25 text-primary-foreground mb-4">
+          <div className="inline-flex items-center justify-center size-12 rounded-xl bg-primary shadow-lg shadow-primary/25 text-primary-foreground mb-4">
             <Building2 className="size-6" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight">{t("registerTitle")}</h1>

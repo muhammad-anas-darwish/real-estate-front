@@ -365,7 +365,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               <CardContent className="p-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center size-10 rounded-xl gradient-primary text-primary-foreground">
+                    <div className="flex items-center justify-center size-10 rounded-xl bg-primary text-primary-foreground">
                       <User className="size-4" />
                     </div>
                     <div className="space-y-1">
