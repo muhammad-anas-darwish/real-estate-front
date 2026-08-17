@@ -1,10 +1,13 @@
 "use client"
 
-import { Eye, Heart, MessageCircle, Percent, TrendingUp } from "lucide-react"
-import { useTranslations } from "next-intl"
+import { Eye, Heart, MessageCircle, Percent, TrendingUp, Sparkles } from "lucide-react"
+import Link from "next/link"
+import { useLocale, useTranslations } from "next-intl"
 
+import { buttonVariants } from "components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card"
 import { Skeleton } from "components/ui/skeleton"
+import { FeatureGate } from "components/auth/FeatureGate"
 
 import { AnalyticsChart } from "./AnalyticsChart"
 import { AnalyticsKpiCard } from "./AnalyticsKpiCard"
@@ -64,6 +67,7 @@ export function AnalyticsDashboard({
   initialPropertyId = null,
 }: AnalyticsDashboardProps) {
   const t = useTranslations("analytics")
+  const locale = useLocale()
   const {
     summary,
     isLoading,
@@ -125,8 +129,15 @@ export function AnalyticsDashboard({
 
       {summary.source === "basic" && (
         <Card className="border-amber-500/30 bg-amber-500/5">
-          <CardContent className="p-4 text-sm text-muted-foreground">
-            {t("basicNotice")}
+          <CardContent className="flex flex-col gap-3 p-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+            <p className="leading-relaxed">{t("basicNotice")}</p>
+            <Link
+              href={`/${locale}/subscriptions/plans`}
+              className={buttonVariants({ size: "sm", className: "shrink-0 rounded-lg" })}
+            >
+              <Sparkles className="mr-1.5 size-4" aria-hidden />
+              {t("upgradeCta")}
+            </Link>
           </CardContent>
         </Card>
       )}
@@ -178,35 +189,37 @@ export function AnalyticsDashboard({
       </Card>
 
       {summary.top_properties.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">{t("topProperties")}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {summary.top_properties.map((property) => (
-              <div
-                key={property.id}
-                className="flex items-center justify-between gap-3 rounded-lg border bg-muted/30 px-3 py-2.5"
-              >
-                <p className="truncate text-sm font-medium">{property.title}</p>
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                  <span className="inline-flex items-center gap-1">
-                    <Eye className="size-3" aria-hidden />
-                    {property.views}
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    <MessageCircle className="size-3" aria-hidden />
-                    {property.contacts}
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    <Heart className="size-3" aria-hidden />
-                    {property.favorites}
-                  </span>
+        <FeatureGate slug="advanced_analytics">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">{t("topProperties")}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {summary.top_properties.map((property) => (
+                <div
+                  key={property.id}
+                  className="flex items-center justify-between gap-3 rounded-lg border bg-muted/30 px-3 py-2.5"
+                >
+                  <p className="truncate text-sm font-medium">{property.title}</p>
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                    <span className="inline-flex items-center gap-1">
+                      <Eye className="size-3" aria-hidden />
+                      {property.views}
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <MessageCircle className="size-3" aria-hidden />
+                      {property.contacts}
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <Heart className="size-3" aria-hidden />
+                      {property.favorites}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+              ))}
+            </CardContent>
+          </Card>
+        </FeatureGate>
       )}
     </div>
   )

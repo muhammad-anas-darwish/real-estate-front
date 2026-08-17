@@ -441,6 +441,22 @@
       "individual": "Individual seller",
       "office": "Real estate office"
     },
+    "upgrade": {
+      "title": "Upgrade to a real estate office",
+      "description": "Request to convert your individual publisher account into a verified office. An admin will review your application.",
+      "reasonLabel": "Why do you want to upgrade? (optional)",
+      "reasonPlaceholder": "Tell us about your office, team, and properties.",
+      "reasonHint": "Optional context helps the reviewer approve faster.",
+      "submit": "Request upgrade",
+      "resubmit": "Resubmit request",
+      "pendingTitle": "Request under review",
+      "pendingDescription": "An admin is reviewing your upgrade request. We'll update your account type once it's approved.",
+      "rejectedTitle": "Previous request was rejected",
+      "rejectedDescription": "You can submit a new request with additional context.",
+      "approvedTitle": "You are a real estate office",
+      "approvedDescription": "Your publisher account is now an office. You can add office info and manage employees.",
+      "requestSent": "Upgrade request sent"
+    },
     "employees": "{count, plural, =1 {1 employee} other {# employees}}",
     "stats": {
       "title": "Stats",
@@ -816,7 +832,19 @@
     "noData": "No data yet",
     "empty": "No analytics data available yet.",
     "basicNotice": "Detailed analytics need the advanced_analytics plan feature. Showing basic publisher statistics instead.",
+    "upgradeCta": "Upgrade to Pro",
     "retry": "Retry"
+  },
+  "featureGate": {
+    "locked": {
+      "title": "Pro feature",
+      "description": "This feature is part of a paid subscription plan. Upgrade your account to unlock it.",
+      "upgrade": "View plans"
+    },
+    "loading": {
+      "title": "Checking access",
+      "description": "Hold on while we verify your subscription access."
+    }
   },
   "pwa": {
     "offline": "You are offline. Showing the latest cached content.",

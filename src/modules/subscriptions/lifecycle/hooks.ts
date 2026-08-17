@@ -10,6 +10,12 @@ import type {
 } from "./types"
 import { ApiClientError } from "@/lib/apiClient"
 
+/**
+ * Map of subscription feature slug -> last-known enabled state.
+ * Keys are slugs, values are the most recent result for that slug.
+ */
+export type FeatureAccessMap = Record<string, boolean>
+
 export interface UseCurrentSubscriptionResult {
   subscription: CurrentSubscription | null
   loading: boolean
@@ -185,4 +191,55 @@ export function useSubscriptionStatusLogs(
   }, [refresh])
 
   return { logs, loading, error, refresh }
+}
+
+export interface UseFeatureAccessResult {
+  enabled: boolean
+  loading: boolean
+  error: string | null
+  refresh: () => Promise<void>
+}
+
+/**
+ * Check whether the current subscription plan grants a feature by slug.
+ * Hits `GET /subscription/features/{slug}` (OpenAPI) and reads the
+ * `is_enabled` flag. Returns `{ enabled: false, loading: false }` for
+ * unauthenticated users so callers can safely use it everywhere.
+ */
+export function useFeatureAccess(slug: string | null | undefined): UseFeatureAccessResult {
+  const [enabled, setEnabled] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const refresh = useCallback(async () => {
+    if (!slug) {
+      setEnabled(false)
+      setLoading(false)
+      setError(null)
+      return
+    }
+    setLoading(true)
+    setError(null)
+    try {
+      const data = await subscriptionLifecycleService.checkFeature(slug)
+      setEnabled(Boolean(data?.is_enabled))
+    } catch (err) {
+      const message =
+        err instanceof ApiClientError
+          ? err.message
+          : "Failed to check feature access"
+      setError(message)
+      setEnabled(false)
+    } finally {
+      setLoading(false)
+    }
+  }, [slug])
+
+  useEffect(() => {
+    void Promise.resolve().then(() => {
+      void refresh()
+    })
+  }, [refresh])
+
+  return { enabled, loading, error, refresh }
 }

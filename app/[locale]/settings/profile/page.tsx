@@ -16,6 +16,7 @@ import {
   SocialLinksEditor,
   type SocialLinksMap,
 } from "src/modules/auth"
+import { UpgradeToOfficeCard } from "src/modules/publishers/upgrade"
 
 export default function ProfileSettingsPage() {
   const { user, updateUser } = useAuth()
@@ -243,6 +244,8 @@ export default function ProfileSettingsPage() {
           </form>
         </CardContent>
       </Card>
+
+      <UpgradeToOfficeCard publisherType={user.publisher_type} />
     </>
   )
 }
